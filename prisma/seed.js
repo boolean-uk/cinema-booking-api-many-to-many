@@ -6,7 +6,7 @@ async function seed() {
     const movies = await createMovies();
     const screens = await createScreens();
     await createScreenings(screens, movies);
-
+    const seats = await createSeats(screens)
     process.exit(0);
 }
 
@@ -95,6 +95,37 @@ async function createScreenings(screens, movies) {
             console.log('Screening created', screening);
         }
     }
+}
+
+async function createSeats(screens) {
+    const rawSeats = [{ seatNumber: 1 }, { seatNumber: 2 }, { seatNumber: 3 }];
+    
+    const seats = [];
+
+    //populate each screen with seats (therefore need to loop through seats and screens):
+    for (const rawSeat of rawSeats) {
+    for (let i = 0; i < screens.length; i++) {
+      const seat = await prisma.seat.create({
+        data: {
+          ...rawSeat,
+          screen: {
+            connect: { id: screens[i].id },
+          },
+        },
+        include: { 
+            screen: {
+                select: {
+                    number: true,
+                }
+            } 
+        },
+      });
+      //storing each seat into seats which could be used elsewhere:
+      seats.push(seat);
+      console.log("Seat created", seat)
+    }
+}
+return seats
 }
 
 seed()
