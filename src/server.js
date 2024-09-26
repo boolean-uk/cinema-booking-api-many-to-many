@@ -12,12 +12,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
-
 // Add your router below
 
-
-
-
+const seatRouter = require('./routers/seats.js')
+app.use('/', seatRouter)
 
 module.exports = app
